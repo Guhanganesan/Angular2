@@ -1,0 +1,117 @@
+------------------------- Basic.service.ts--------------------------------
+import {Injectable} from '@angular/core';
+import{Http} from '@angular/http';
+import 'rxjs/add/operator/map';
+@Injectable()
+export class BasicService
+{
+    jsondata:any;
+    constructor( private http:Http)
+    {
+
+    }
+
+    GetPost()
+    {
+     return this.http.get('https://jsonplaceholder.typicode.com/users').map(result=>result.json());
+    }
+    myJson()
+    {
+        return this.jsondata =[ 
+            {name:"Guhan", DOB: new Date("July 20, 1990"), gender:"Male", salary:15000, Bonus:2000},
+            {name:"Anbu", DOB:new Date("August 21, 1991") , gender:"Male", salary:12000,Bonus:3000},
+            {name:"Rajesh", DOB: new Date("September 22, 1992"), gender:"Male", salary:17000,Bonus:1000},
+            {name:"Komathi", DOB:new Date("October 23, 1993") , gender:"Female", salary:18000,Bonus:4000},
+            {name:"Kannan", DOB: new Date("November 24, 1994"), gender:"Male", salary:19000,Bonus:2500},
+          ];
+    }
+}
+
+Install:
+             npm install ng2-filter-pipe --save
+-------------------------- app.module.ts-------------------------
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import{HttpModule}from'@angular/http';
+import{BasicService} from'./Basic.service';
+import{FormsModule}from '@angular/forms';
+import { Ng2FilterPipeModule } from 'ng2-filter-pipe';
+import { AppComponent } from './app.component';
+import { Http } from '@angular/http/src/http';
+
+
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    
+  ],
+  imports: [
+    BrowserModule,HttpModule,FormsModule,Ng2FilterPipeModule
+  ],
+  providers: [BasicService],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+---------------------------------app.component.ts--------------------
+import { Component } from '@angular/core';
+import {BasicService} from'./Basic.service';
+@Component({
+  moduleId:module.id,
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
+ 
+})
+export class AppComponent {
+  title = 'Angular 2';title1:any;
+  data:any;
+  data1:any;
+  PostId:string;
+
+  searchData: any = { name: '',username:'',email:'' };
+
+  constructor(private MyService:BasicService)
+  {
+     
+      //this.MyService.GetPost().subscribe(m=>{console.log(m); });
+     this.MyService.GetPost().subscribe(m=> { this.data=m; });
+  }
+  ngOnInit()
+  {
+    this.data1=this.MyService.myJson();
+  }
+}
+-----------------------------------app.component.html---------------------
+
+
+  <h1>
+    Welcome to {{title}}!
+  </h1>
+  <br><br>
+  <input type="text" [(ngModel)]="searchData.name" placeholder="Filter By Name">
+  <input type="text" [(ngModel)]="searchData.username" placeholder="Filter By Username">
+  <input type="text" [(ngModel)]="searchData.email" placeholder="Filter By Email">
+
+  <table >
+    <tr> <th>ID</th><th>Name</th><th>Username</th><th>Email</th><th>City</th></tr>
+    <tr *ngFor="let jsondata of data | filterBy:searchData"> 
+       <td>{{jsondata.id}}</td>
+       <td>{{jsondata.name}}</td>
+       <td>{{jsondata.username}}</td>
+       <td>{{jsondata.email}}</td>
+       <td>{{jsondata.address.city|uppercase}}</td>
+    </tr>    
+  </table>
+  <br><br>
+
+<hr/>
+    <table >
+        <tr> <th>Name</th><th>DOB</th><th>Gender</th><th>Salary</th></tr>
+      <tr *ngFor="let item of data1"> 
+           <td>{{item.name | uppercase}}</td>
+           <td>{{item.DOB | date:"dd/MM/yyyy"}}</td>
+           <td>{{item.gender }}</td>
+           <td>{{item.salary}}</td>
+      </tr>    
+    </table>

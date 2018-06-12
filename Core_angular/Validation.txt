@@ -1,0 +1,94 @@
+
+             ---- VALIDATION------
+
+app.component.html:
+
+<h2> Add Elements</h2>
+    {{m}}
+
+    <h2>Validation </h2>
+    
+   <p>  
+        <input type="text" [(ngModel)]="i1" placeholder="Enter your Name">
+        <span style="color:red;"*ngIf="i1==undefined else error1">*Please Fill this field</span>
+
+        <ng-template #error1>
+            <span style="color:red;">{{i1}}</span>
+        </ng-template>
+   </p>
+   <p> 
+        <input type="text" [(ngModel)]="i2" placeholder="Enter your Name">
+        <span style="color:red;"*ngIf="i2==undefined else error2">*Please Fill this field</span>
+
+        <ng-template #error2>
+            <span style="color:red;">{{i2}}</span>
+        </ng-template>
+   </p>
+   <p>
+         <input type="text" [(ngModel)]="i3" placeholder="Enter your Name">
+         <span style="color:red;"*ngIf="i3==undefined else error3">*Please Fill this field</span>
+
+         <ng-template #error3>
+                <span style="color:red;">{{i3}}</span>
+        </ng-template>
+  </p>
+         
+  <input type="text" [(ngModel)]="i4" placeholder="Enter your Name">
+  <br> {{x10}}<br>
+  <input type="text" [(ngModel)]="i5" placeholder="Enter your Mobile">
+  <br> {{x20}}<br>
+  <input type="text" [(ngModel)]="i6" placeholder="Enter your Password">
+  <br> {{x30}}<br>
+  <br>
+  <button (click)="myButton(i4,i5,i6)">click</button>
+  <br> {{x1}} <br> {{x2}} <br> {{x3}}  
+
+  
+app.component.ts:
+
+     m = ["A","B","C"];
+      constructor()
+     {
+       this.m.push("E");
+       this.add();
+     }
+     ngOnInit()
+     {
+       this.m.push("F");
+     }
+     add()
+     {
+       this.m.push("G");
+     }
+     x1='';x2='';x3='';
+       x10='';
+       x20='';
+       x30='';
+
+      myButton(p1,p2,p3)
+      {
+        this.x1=p1;
+        this.x2=p2;
+        this.x3=p3;
+        if(this.x1==undefined || this.x1=='')
+        {
+          this.x10="Please Enter Name!";
+        }
+        else{
+          this.x10="";
+        }
+        if(this.x2==undefined || this.x2=='')
+        {
+          this.x20="Please Enter Mobile!";
+        }
+        else{
+          this.x20="";
+        }
+        if(this.x3==undefined || this.x3=='')
+        {
+          this.x30="Please Enter Password!";
+        }
+        else{
+          this.x30="";
+        }
+      }

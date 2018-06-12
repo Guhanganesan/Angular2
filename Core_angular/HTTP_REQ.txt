@@ -1,0 +1,78 @@
+--------Create service (Basic.service.ts) in app folder----
+
+------ Basic.service.ts-----
+import {Injectable} from '@angular/core';
+import{Http} from '@angular/http';
+import 'rxjs/add/operator/map';
+@Injectable()
+export class BasicService
+{
+    constructor( private http:Http)
+    {
+
+    }
+
+    GetPost()
+    {
+     return this.http.get('https://jsonplaceholder.typicode.com/posts').map(result=>result.json());
+    }
+    GetPostAsperId(Id:any)
+    {
+        return this.http.get('https://jsonplaceholder.typicode.com/posts'+Id).map(result=>result.json());
+    }
+}
+
+----------------------------------app.component.ts---------------------
+import { Component } from '@angular/core';
+import {BasicService} from'./Basic.service';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'Angular 2';title1:any;
+  data:any;
+ 
+  constructor(private MyService:BasicService)
+  {
+     
+     //this.MyService.GetPost().subscribe(m=>{console.log(m); });
+     this.MyService.GetPost().subscribe(m=> { this.data=m; });
+  }
+    
+}
+------------------------ app.component.html-----------------
+<h1>
+    Welcome to {{ title }}!
+  </h1>
+  
+  <table *ngFor="let item of data">
+      <tr> <td>Id</td><td>{{item.id}}</td></tr>
+      <tr> <td>UserId</td><td>{{item.userId}}</td></tr>
+      <tr> <td>Title</td><td>{{item.title | uppercase}}</td></tr>
+      <tr> <td>Body</td><td>{{item.body}}</td></tr>
+      </table>
+-------------------------------- app.module.ts-----------------
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import{HttpModule}from'@angular/http';
+import{BasicService} from'./Basic.service';
+import{FormsModule}from '@angular/forms';
+
+import { AppComponent } from './app.component';
+import { Http } from '@angular/http/src/http';
+
+
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,HttpModule,FormsModule,
+  ],
+  providers: [BasicService],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }

@@ -1,0 +1,89 @@
+------------------ (create)-- example.service.ts in app folder-------------------
+
+import {Injectable} from '@angular/core';
+@Injectable()
+export class ExampleService
+{
+    incrementSal()
+    {
+        return "This my service1";
+    }
+}
+
+----------------- (create) example1.service.ts--------------
+// I am creating services file.
+
+import {Injectable} from '@angular/core';
+@Injectable()
+export class ExampleService1
+{
+    l1=0;l2=0;l3=0;
+    incrementSal1()
+    {
+       return "This is my service2"; 
+    }
+    myFunction(x,y)
+    {
+      this.l1=x;
+      this.l2=y;
+      return this.l1+this.l2;
+    }
+}
+
+------------------------app.component.html------------------
+
+  <h1>
+    Welcome to {{title}}!
+  </h1>
+  <h2>{{x1}}</h2>
+  <h2>{{x2}}</h2>
+  <h2>{{x3}}</h2>
+
+----------------------app.component.ts---------------------
+
+import { Component } from '@angular/core';
+import {ExampleService} from './example.service';
+import {ExampleService1} from './example1.service';
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
+  providers:[ExampleService,ExampleService1]
+})
+export class AppComponent {
+  title = 'app';
+
+  x1: string;
+  x2:string;
+  x3:number;
+  constructor ( 
+    private m1:ExampleService,
+    private m2:ExampleService1 )
+{
+     
+}
+ngOnInit()
+{ 
+   this.x1= this.m1.incrementSal();
+   this.x2= this.m2.incrementSal1();
+   this.x3=this.m2.myFunction(100,200);
+}
+
+}
+
+------------------app.module.ts----------------------
+
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { AppComponent } from './app.component';
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }

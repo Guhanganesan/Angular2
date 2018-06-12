@@ -1,0 +1,240 @@
+OOPS:
+
+	CLASS:
+	1) class A { 
+				name: string ;
+				course: string;
+				Fees: number;
+				constructor() 
+				{ 
+				  this.name = "Guhan";
+				  this.Fees = 10000;
+				  this.course = "PHP";
+				  alert(this.name+" "+this.Fees+" "+this.course);
+				}
+	}
+	let obj = new A();
+-----------------------------------------------------------------
+	2)  class A { 
+		name: string ;
+		course: string;
+		Fees: number;
+		details(){ 
+			this.name = "Guhan";
+			this.Fees = 10000;
+			this.course = "PHP";
+			alert(this.name+" "+this.Fees+" "+this.course);
+		}
+
+	}
+	let obj = new A();
+	obj.details();
+------------------------------------------------------------------
+	3)
+	class A { 
+		m: number ;
+		n: number;
+		p: number;
+		details(x:number,y:number){ 
+			this.m =x;
+			this.n =y;
+			this.p = x+y;
+			alert(this.p);
+		}
+
+	}
+	let obj = new A();
+	obj.details(10,20);
+--------------------------------------------------------------------
+	4) 
+	interface printable { 
+		print();
+		run();
+	}
+	class calculate implements printable
+	{
+		public print(): void { 
+			alert("x");
+		}
+		public run(): void{
+			alert("y");
+		}
+		public calculate(): void
+		{
+			alert("z");
+		}
+
+	}
+	let obj = new calculate();
+	obj.print();
+	obj.run();
+	obj.calculate();
+------------------------------------------------------------------
+	INHERITANCE:
+
+	1) Single Level INHERITANCE
+
+	class Employee { 
+		public age = 30;
+		constructor(public name: string) {
+		}
+		public drive()
+		{
+			alert("I am go to Chennai");
+		}
+	}
+	class Salary extends Employee
+	{    
+		constructor() 
+		{
+			console.log(super("Guhan"));
+		}
+		public print(): void 
+		{ 
+		 super.drive();
+		}
+	}
+	let obj = new Salary();
+	obj.print();
+
+--------------------------------------------------------------
+	2) Multi Level INHERITANCE
+
+	class Employee { 
+		public age = 30;
+		constructor(public fname: string) {
+		}
+		public drive()
+		{
+			console.log("I am go to Chennai");
+		}
+	}
+	class Salary extends Employee
+	{
+		constructor() 
+		{
+		  console.log(super("Guhan"));
+		}
+		public print(): void 
+		{ 
+		  super.drive();
+		}
+	}
+	class Bonus extends Salary{
+		extra()
+			{
+				console.log("Bonus value is 2000"); 
+			}
+	}
+	let obj = new Bonus();
+	obj.print();
+	obj.extra();
+
+-------------------------------------------------------------------
+	3) Hierarchial INHERITANCE
+
+	class Employee { 
+		public age = 30;
+		constructor(public fname: string) {
+		}
+		public drive()
+		{
+			console.log("I am go to Chennai");
+		}
+	}
+	class Salary extends Employee
+	{
+		
+		constructor() 
+		{
+				console.log(super("Guhan"));
+		}
+		public print(): void 
+		{
+			super.drive();
+		}
+	}
+
+	class Bonus extends Employee{
+
+		
+		extra()
+			{
+			console.log("Bonus value is 2000"); 
+			}
+	}
+	let obj = new Salary();
+	obj.print();
+
+	let obj1 = new Bonus(name);
+	obj1.extra();
+
+-----------------------------------------------------------------
+	POLYMORPHISM:
+
+	Ex1:  Method Overriding
+
+	class RBI
+	{
+		rate = 5;
+		x;
+	}
+	class Axis extends RBI{
+		getInterest(p, n)
+		{
+			this.x = (p * n * this.rate) / 100;
+			alert(this.x);
+		}
+	}
+
+	class SBI extends RBI{
+		getInterest(p,n,r)
+		{
+			this.x = (p * n * r) / 10;
+			alert(this.x);
+		}
+	}
+	let A = new Axis();
+	let S = new SBI();
+
+	A.getInterest(25000, 3);
+	S.getInterest(35000, 5, 10);
+--------------------------------------------------------------
+
+	Ex: 2 Method overriding
+
+	class RBI
+	{
+		rate = 5;
+		x;
+	}
+	class Axis extends RBI{
+		getInterest(p, n)
+		{
+			this.x = (p * n * this.rate) / 100;
+			alert(this.x);
+		}
+	}
+
+	class SBI extends RBI{
+		getInterest(p,n)
+		{
+			this.x = (p * n ) / 10;
+			alert(this.x);
+		}
+	}
+	let A = new Axis();
+	let S = new SBI();
+
+	A.getInterest(25000, 3);
+	S.getInterest(35000, 5);
+
+
+
+
+				
+				
+
+
+
+

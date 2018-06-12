@@ -1,0 +1,103 @@
+
+--------------------------- app.module.ts---------------------------
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import{  HttpModule }from'@angular/http';
+import{ BasicService} from'./Basic.service';
+import{FormsModule}from '@angular/forms';
+import { AppComponent } from './app.component';
+import { Http } from '@angular/http/src/http';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    
+  ],
+  imports: [
+    BrowserModule,HttpModule,FormsModule
+  ],
+  providers: [BasicService],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+------------------------- create Basic.service.ts in app folder----
+
+import {Injectable} from '@angular/core';
+import{Http} from '@angular/http';
+import 'rxjs/add/operator/map';
+@Injectable()
+export class BasicService
+{
+    jsondata:any;
+    constructor( private http:Http)
+    {
+
+    }
+
+    GetPost()
+    {
+     return this.http.get('https://jsonplaceholder.typicode.com/posts').map(result=>result.json());
+    }
+    myJson()
+    {
+        return this.jsondata =[ 
+            {name:"Guhan", DOB: new Date("July 20, 1990"), gender:"Male", salary:15000, Bonus:2000},
+            {name:"Anbu", DOB:new Date("August 21, 1991") , gender:"Male", salary:12000,Bonus:3000},
+            {name:"Rajesh", DOB: new Date("September 22, 1992"), gender:"Male", salary:17000,Bonus:1000},
+            {name:"Komathi", DOB:new Date("October 23, 1993") , gender:"Female", salary:18000,Bonus:4000},
+            {name:"Kannan", DOB: new Date("November 24, 1994"), gender:"Male", salary:19000,Bonus:2500},
+          ];
+    }
+}
+
+-------------------- app.component.ts----------------------------
+
+import { Component } from '@angular/core';
+import {BasicService} from'./Basic.service';
+@Component({
+  moduleId:module.id,
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
+ 
+})
+export class AppComponent {
+  title = 'Angular 2';title1:any;
+  data:any;
+  data1:any;
+  PostId:string;
+  constructor(private MyService:BasicService)
+  {
+     
+      //this.MyService.GetPost().subscribe(m=>{console.log(m); });
+     this.MyService.GetPost().subscribe(m=> { this.data=m; });
+  }
+  ngOnInit()
+  {
+    this.data1=this.MyService.myJson();
+  }
+}
+
+----------------------app.component.html------------------
+
+
+  <h1>
+    Welcome to {{ title }}!
+  </h1>
+  <br><br>
+  
+<hr/>
+    <table >
+        <tr> <th>Name</th><th>DOB</th><th>Gender</th><th>Salary</th></tr>
+      <tr *ngFor="let item of data1"> 
+           <td>{{item.name | uppercase}}</td>
+           <td>{{item.DOB | date:"dd/MM/yyyy"}}</td>
+           <td>{{item.gender }}</td>
+           <td>{{item.salary}}</td>
+      </tr>    
+    </table>
+  
+-------------------------app.component.css-----------
+table{border:1px solid green; border-collapse: collapse;}
+td{border: 1px solid red; color:blue;width:200px;text-align: center;height: 35px;}

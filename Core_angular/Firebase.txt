@@ -1,0 +1,664 @@
+                 app.component.html
+				 
+	<main>
+	<router-outlet></router-outlet>
+    </main>
+	
+	             app.component.scss
+				 
+	$icon-font-path: "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/fonts/" !default;
+	// Include Bootstrap styles
+	@import "~bootstrap-sass/assets/stylesheets/_bootstrap";
+	
+	             app.component.ts
+				 
+	import { Component, ViewEncapsulation } from '@angular/core';
+
+	@Component({
+	  selector: 'app-root',
+	  templateUrl: './app.component.html',
+	  styleUrls: ['./app.component.scss'],
+	  encapsulation: ViewEncapsulation.None
+	})
+	export class AppComponent {
+
+	}
+	
+	               app.module.ts
+				   
+				   import { BrowserModule } from '@angular/platform-browser';
+		import { NgModule } from '@angular/core';
+		import { RouterModule } from '@angular/router';
+		import { rootRouterConfig } from './app.routes';
+		import { AngularFireModule } from 'angularfire2';
+		import { AngularFirestoreModule } from 'angularfire2/firestore';
+		import { AngularFireAuthModule } from 'angularfire2/auth';
+		import { environment } from '../environments/environment';
+		import { LoginComponent } from './login/login.component';
+		import { UserComponent } from './user/user.component';
+		import { RegisterComponent } from './register/register.component';
+		import { UserResolver } from './user/user.resolver';
+		import { AuthGuard } from './core/auth.guard';
+		import { AuthService } from './core/auth.service';
+		import { UserService } from './core/user.service';
+		import { ReactiveFormsModule } from '@angular/forms';
+
+		import { AppComponent } from './app.component';
+
+		@NgModule({
+		  declarations: [
+			AppComponent,
+			LoginComponent,
+			UserComponent,
+			RegisterComponent
+		  ],
+		  imports: [
+			BrowserModule,
+			ReactiveFormsModule,
+			RouterModule.forRoot(rootRouterConfig, { useHash: false }),
+			AngularFireModule.initializeApp(environment.firebase),
+			AngularFirestoreModule, // imports firebase/firestore, only needed for database features
+			AngularFireAuthModule, // imports firebase/auth, only needed for auth features
+		  ],
+		  providers: [AuthService, UserService, UserResolver, AuthGuard],
+		  bootstrap: [AppComponent]
+		})
+		export class AppModule { }
+
+		
+		                   app/app.routes.ts
+						   
+		import { Routes } from '@angular/router';
+		import { LoginComponent } from './login/login.component';
+		import { UserComponent } from './user/user.component';
+		import { RegisterComponent } from './register/register.component';
+		import { UserResolver } from './user/user.resolver';
+		import { AuthGuard } from './core/auth.guard';
+
+		export const rootRouterConfig: Routes = [
+		  { path: '', redirectTo: 'login', pathMatch: 'full' },
+		  { path: 'login', component: LoginComponent, canActivate: [AuthGuard] },
+		  { path: 'register', component: RegisterComponent, canActivate: [AuthGuard] },
+		  { path: 'user', component: UserComponent,  resolve: { data: UserResolver}}
+		];
+
+		
+		                  app/core/auth.guard.ts
+						  
+	    import { Routes } from '@angular/router';
+		import { LoginComponent } from './login/login.component';
+		import { UserComponent } from './user/user.component';
+		import { RegisterComponent } from './register/register.component';
+		import { UserResolver } from './user/user.resolver';
+		import { AuthGuard } from './core/auth.guard';
+
+		export const rootRouterConfig: Routes = [
+		  { path: '', redirectTo: 'login', pathMatch: 'full' },
+		  { path: 'login', component: LoginComponent, canActivate: [AuthGuard] },
+		  { path: 'register', component: RegisterComponent, canActivate: [AuthGuard] },
+		  { path: 'user', component: UserComponent,  resolve: { data: UserResolver}}
+		];
+
+		
+		                app/core/auth.service.ts
+						
+	  import { Injectable } from "@angular/core";
+		import 'rxjs/add/operator/toPromise';
+		import { AngularFireAuth } from 'angularfire2/auth';
+		import * as firebase from 'firebase/app';
+
+		@Injectable()
+		export class AuthService {
+
+		  constructor(
+		   public afAuth: AngularFireAuth
+		 ){}
+
+		  doFacebookLogin(){
+			return new Promise<any>((resolve, reject) => {
+			  let provider = new firebase.auth.FacebookAuthProvider();
+			  this.afAuth.auth
+			  .signInWithPopup(provider)
+			  .then(res => {
+				resolve(res);
+			  }, err => {
+				console.log(err);
+				reject(err);
+			  })
+			})
+		  }
+
+		  doTwitterLogin(){
+			return new Promise<any>((resolve, reject) => {
+			  let provider = new firebase.auth.TwitterAuthProvider();
+			  this.afAuth.auth
+			  .signInWithPopup(provider)
+			  .then(res => {
+				resolve(res);
+			  }, err => {
+				console.log(err);
+				reject(err);
+			  })
+			})
+		  }
+
+		  doGoogleLogin(){
+			return new Promise<any>((resolve, reject) => {
+			  let provider = new firebase.auth.GoogleAuthProvider();
+			  provider.addScope('profile');
+			  provider.addScope('email');
+			  this.afAuth.auth
+			  .signInWithPopup(provider)
+			  .then(res => {
+				resolve(res);
+			  }, err => {
+				console.log(err);
+				reject(err);
+			  })
+			})
+		  }
+
+		  doRegister(value){
+			return new Promise<any>((resolve, reject) => {
+			  firebase.auth().createUserWithEmailAndPassword(value.email, value.password)
+			  .then(res => {
+				resolve(res);
+			  }, err => reject(err))
+			})
+		  }
+
+		  doLogin(value){
+			return new Promise<any>((resolve, reject) => {
+			  firebase.auth().signInWithEmailAndPassword(value.email, value.password)
+			  .then(res => {
+				resolve(res);
+			  }, err => reject(err))
+			})
+		  }
+
+		  doLogout(){
+			return new Promise((resolve, reject) => {
+			  if(firebase.auth().currentUser){
+				this.afAuth.auth.signOut()
+				resolve();
+			  }
+			  else{
+				reject();
+			  }
+			});
+		  }
+
+
+		}
+
+
+		            app/core/user.model.ts
+					
+	      export class FirebaseUserModel {
+		  image: string;
+		  name: string;
+		  provider: string;
+
+		  constructor(){
+			this.image = "";
+			this.name = "";
+			this.provider = "";
+		  }
+		 }
+		 
+		             app/core/user.service.ts
+					 
+	
+		import { Injectable } from "@angular/core";
+		import 'rxjs/add/operator/toPromise';
+		import { AngularFirestore } from 'angularfire2/firestore';
+		import { AngularFireAuth } from 'angularfire2/auth';
+		import * as firebase from 'firebase/app';
+
+		@Injectable()
+		export class UserService {
+
+		  constructor(
+		   public db: AngularFirestore,
+		   public afAuth: AngularFireAuth
+		 ){
+		 }
+
+
+		  getCurrentUser(){
+			return new Promise<any>((resolve, reject) => {
+			  var user = firebase.auth().onAuthStateChanged(function(user){
+				if (user) {
+				  resolve(user);
+				} else {
+				  reject('No user logged in');
+				}
+			  })
+			})
+		  }
+
+		  updateCurrentUser(value){
+			return new Promise((resolve, reject) => {
+			  var user = firebase.auth().currentUser;
+			  user.updateProfile({
+				displayName: value.name,
+				photoURL: user.photoURL
+			  }).then(res => {
+				resolve(res)
+			  }, err => reject(err))
+			})
+		  }
+		}
+		
+		                 app/login.component.html
+						 
+		<div class="row">
+     <div class="col-md-6 col-md-offset-3">
+      <form [formGroup]="loginForm">
+        <div class="form-group">
+          <label>Email address</label>
+          <input type="email" formControlName="email" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" class="form-control" formControlName="password">
+          <label class="error">{{errorMessage}}</label>
+        </div>
+        <button type="submit" (click)="tryLogin(loginForm.value)" class="btn btn-default">Login</button>
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <button type="button" class="btn btn-primary btn-block" (click)="tryFacebookLogin()">Login with Facebook</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <button type="button" class="btn btn-danger btn-block" (click)="tryGoogleLogin()">Login with Google</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <button type="button" class="btn btn-info btn-block" (click)="tryTwitterLogin()">Login with Twitter</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <p>No account yet? <a href="/register">Create an account</a></p>
+    </div>
+  </div>
+  </div>
+  
+                      app/login.component.ts
+					  
+					  
+		import { Component } from '@angular/core';
+		import { AuthService } from '../core/auth.service'
+		import { Router, Params } from '@angular/router';
+		import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+		@Component({
+		  selector: 'page-login',
+		  templateUrl: 'login.component.html',
+		  styleUrls: ['login.scss']
+		})
+		export class LoginComponent {
+
+		  loginForm: FormGroup;
+		  errorMessage: string = '';
+
+		  constructor(
+			public authService: AuthService,
+			private router: Router,
+			private fb: FormBuilder
+		  ) {
+			this.createForm();
+		  }
+
+		  createForm() {
+			this.loginForm = this.fb.group({
+			  email: ['', Validators.required ],
+			  password: ['',Validators.required]
+			});
+		  }
+
+		  tryFacebookLogin(){
+			this.authService.doFacebookLogin()
+			.then(res => {
+			  this.router.navigate(['/user']);
+			})
+		  }
+
+		  tryTwitterLogin(){
+			this.authService.doTwitterLogin()
+			.then(res => {
+			  this.router.navigate(['/user']);
+			})
+		  }
+
+		  tryGoogleLogin(){
+			this.authService.doGoogleLogin()
+			.then(res => {
+			  this.router.navigate(['/user']);
+			})
+		  }
+
+		  tryLogin(value){
+			this.authService.doLogin(value)
+			.then(res => {
+			  this.router.navigate(['/user']);
+			}, err => {
+			  console.log(err);
+			  this.errorMessage = err.message;
+			})
+		  }
+		}
+
+		
+		     app/login/login.scss
+			 
+			 
+			 
+	.header{
+	  text-align: center;
+	  font-size: 30px;
+	  margin-bottom: 40px;
+	}
+
+	.row{
+	  margin-top: 10px;
+	}
+
+	.error{
+	  color: red;
+	}
+	 
+	            app/register/register.component.html
+				
+	<h1 class="header">Create an account with Firebase or Social Providers</h1>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3">
+      <form [formGroup]="registerForm">
+        <div class="form-group">
+          <label>Email address</label>
+          <input type="email" formControlName="email" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" class="form-control" formControlName="password">
+          <label class="error">{{errorMessage}}</label>
+          <label class="success">{{successMessage}}</label>
+        </div>
+        <button type="submit" (click)="tryRegister(registerForm.value)" class="btn btn-default">Register</button>
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <button type="button" class="btn btn-primary btn-block" (click)="tryFacebookLogin()">Register with Facebook</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <button type="button" class="btn btn-danger btn-block" (click)="tryGoogleLogin()">Register with Google</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <button type="button" class="btn btn-info btn-block" (click)="tryTwitterLogin()">Register with Twitter</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <p>Already have an account? <a href="/login">Login</a></p>
+    </div>
+  </div>
+</div>
+
+
+                   app/register/register.component.scss
+				   
+				  .header{
+				  text-align: center;
+				  font-size: 30px;
+				  margin-bottom: 40px;
+				  }
+
+				 .row{
+				margin-top: 10px;
+				}
+
+				.error{
+				color: red;
+				}
+
+				.success{
+				color: green;
+				}
+				
+				
+				register/register.component.ts
+				
+	    import { Component } from '@angular/core';
+		import { AuthService } from '../core/auth.service'
+		import { Router, Params } from '@angular/router';
+		import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+
+		@Component({
+		  selector: 'app-register',
+		  templateUrl: './register.component.html',
+		  styleUrls: ['./register.component.scss']
+		})
+		export class RegisterComponent {
+
+		  registerForm: FormGroup;
+		  errorMessage: string = '';
+		  successMessage: string = '';
+
+		  constructor(
+			public authService: AuthService,
+			private router: Router,
+			private fb: FormBuilder
+		  ) {
+			this.createForm();
+		   }
+
+		   createForm() {
+			 this.registerForm = this.fb.group({
+			   email: ['', Validators.required ],
+			   password: ['',Validators.required]
+			 });
+		   }
+
+		   tryFacebookLogin(){
+			 this.authService.doFacebookLogin()
+			 .then(res =>{
+			   this.router.navigate(['/user']);
+			 }, err => console.log(err)
+			 )
+		   }
+
+		   tryTwitterLogin(){
+			 this.authService.doTwitterLogin()
+			 .then(res =>{
+			   this.router.navigate(['/user']);
+			 }, err => console.log(err)
+			 )
+		   }
+
+		   tryGoogleLogin(){
+			 this.authService.doGoogleLogin()
+			 .then(res =>{
+			   this.router.navigate(['/user']);
+			 }, err => console.log(err)
+			 )
+		   }
+
+		   tryRegister(value){
+			 this.authService.doRegister(value)
+			 .then(res => {
+			   console.log(res);
+			   this.errorMessage = "";
+			   this.successMessage = "Your account has been created";
+			 }, err => {
+			   console.log(err);
+			   this.errorMessage = err.message;
+			   this.successMessage = "";
+			 })
+		   }
+
+		}
+
+		             app/user/user.component.html
+					 
+		<div class="container">
+  <div class="row">
+    <div class="col-md-4 col-md-offset-4">
+      <div class="card" style="width: 20rem;">
+        <img class="card-img-top image" [src]="user.image" alt="Card image cap">
+        <div *ngIf='user.provider != "password"'class="card-body">
+          <h4 class="card-title">{{user.name}}</h4>
+          <p class="card-text">This is an example of Social Authentication using Firebase in an Angular 5 web app. </p>
+        </div>
+        <div *ngIf='user.provider == "password"'class="card-body">
+          <form [formGroup]="profileForm">
+            <div class="form-group">
+              <label>Your name</label>
+              <input type="text" formControlName="name" class="form-control" required>
+            </div>
+          </form>
+          <a (click)="save(profileForm.value)" class="btn btn-primary">Save</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <button type="button" (click)="logout()" class="btn btn-link">Logout</button>
+    </div>
+  </div>
+</div>
+
+                  user/user.component.ts
+				  
+				  
+		import { Component, OnInit } from '@angular/core';
+		import { UserService } from '../core/user.service';
+		import { AuthService } from '../core/auth.service';
+		import { ActivatedRoute } from '@angular/router';
+		import { Location } from '@angular/common';
+		import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+		import { FirebaseUserModel } from '../core/user.model';
+
+		@Component({
+		  selector: 'page-user',
+		  templateUrl: 'user.component.html',
+		  styleUrls: ['user.scss']
+		})
+		export class UserComponent implements OnInit{
+
+		  user: FirebaseUserModel = new FirebaseUserModel();
+		  profileForm: FormGroup;
+
+		  constructor(
+			public userService: UserService,
+			public authService: AuthService,
+			private route: ActivatedRoute,
+			private location : Location,
+			private fb: FormBuilder
+		  ) {
+
+		  }
+
+		  ngOnInit(): void {
+			this.route.data.subscribe(routeData => {
+			  let data = routeData['data'];
+			  if (data) {
+				this.user = data;
+				this.createForm(this.user.name);
+			  }
+			})
+		  }
+
+		  createForm(name) {
+			this.profileForm = this.fb.group({
+			  name: [name, Validators.required ]
+			});
+		  }
+
+		  save(value){
+			this.userService.updateCurrentUser(value)
+			.then(res => {
+			  console.log(res);
+			}, err => console.log(err))
+		  }
+
+		  logout(){
+			this.authService.doLogout()
+			.then((res) => {
+			  this.location.back();
+			}, (error) => {
+			  console.log("Logout error", error);
+			});
+		  }
+		}
+
+	             app/user/user.resolver.ts
+				 
+	import { Injectable } from '@angular/core';
+		import { Resolve, ActivatedRouteSnapshot, Router } from "@angular/router";
+		import { UserService } from '../core/user.service';
+		import { FirebaseUserModel } from '../core/user.model';
+
+		@Injectable()
+		export class UserResolver implements Resolve<FirebaseUserModel> {
+
+		  constructor(public userService: UserService, private router: Router) { }
+
+		  resolve(route: ActivatedRouteSnapshot) : Promise<FirebaseUserModel> {
+
+			let user = new FirebaseUserModel();
+
+			return new Promise((resolve, reject) => {
+			  this.userService.getCurrentUser()
+			  .then(res => {
+				if(res.providerData[0].providerId == 'password'){
+				  user.image = 'http://dsi-vd.github.io/patternlab-vd/images/fpo_avatar.png';
+				  user.name = res.displayName;
+				  user.provider = res.providerData[0].providerId;
+				  return resolve(user);
+				}
+				else{
+				  user.image = res.photoURL;
+				  user.name = res.displayName;
+				  user.provider = res.providerData[0].providerId;
+				  return resolve(user);
+				}
+			  }, err => {
+				this.router.navigate(['/login']);
+				return reject(err);
+			       })
+			    })
+		       }
+		    }
+                        app/user/user.scss
+			    
+				.image{
+                        width: 100%
+                      }
+					  
+					  
+			   environments/environment.ts
+			   
+			   
+			   export const environment = {
+			   production: false,
+			   firebase: {
+				apiKey: "AIzaSyCP1tYK0SpytnJ8wD1ZfqwUEul3QfqW6jo",
+				authDomain: "myauthentication-70710.firebaseapp.com",
+				databaseURL: "https://myauthentication-70710.firebaseio.com",
+				projectId: "myauthentication-70710",
+				storageBucket: "myauthentication-70710.appspot.com",
+				messagingSenderId: "505026239609"
+			   }
+               }; 

@@ -1,0 +1,56 @@
+Angular JS2 
+
+1) Services:
+
+-> create example.service.ts in app folder
+
+-> import {Injectable } from '@angular/core';
+
+<--Import Decorator-->  @Injectable()
+
+-> export class ExampleService{}
+
+
+<-- create some method inside the class-->
+
+   export class ExampleService{
+         
+		 someMethod(){
+		              return 'Hey!';
+		 }
+   
+   }
+   
+<-- Go to app.component.ts and import your class from example.service and add decorator providors:[ExampleService]-->
+
+->  import {ExampleService} from './example.service';
+
+-> 
+@Component({
+  selector: 'app-root',
+  templateUrl: '',
+  styleUrls: ['./app.component.css'],
+  providers:[ExampleService]
+
+})
+
+
+export class AppComponent
+ {     
+      title: string;
+      constructor ( private _exampleService: ExampleService)
+	  {
+	       
+	  }
+	  ngOnInit()
+	  { 
+	     this.title= this._exampleService.someMethod(); 
+	  }
+ }
+
+
+
+
+
+
+ 

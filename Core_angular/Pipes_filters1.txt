@@ -1,0 +1,70 @@
+Install:
+             npm install ng2-filter-pipe --save
+
+-----------------    app.module.ts---------------------
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import {HttpModule} from '@angular/http';
+import {FormsModule} from '@angular/forms';
+import { Ng2FilterPipeModule } from 'ng2-filter-pipe';
+import { AppComponent } from './app.component';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+  
+  ],
+  imports: [
+    BrowserModule,HttpModule, FormsModule,Ng2FilterPipeModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+------------------------- app.component.html-----------------
+
+
+<style>
+    table{border:1px solid red; border-collapse: collapse;}
+    td{border: 1px solid green; width: 140px; height: 40px; color:blue;text-align-last: center;}
+    body{background-color: #B9F4B9;}
+    input{width:250px;height: 25px;background-color: pink;color:blue;}
+</style>
+<body>
+<input type="text" [(ngModel)]="searchData.name" placeholder="Filter By Name">
+<input type="text" [(ngModel)]="searchData.salary" placeholder="Filter By Salary">
+<input type="text" [(ngModel)]="searchData.Bonus" placeholder="Filter By Bonus">
+<br><br> 
+<table>
+    <tr> <th>Name</th><th>DOB</th><th>Gender</th><th>Salary</th><th> Bonus</th></tr>
+    <tr *ngFor="let employee of employees | filterBy: searchData">
+        <td>{{ employee.name }}</td>
+         <td>{{ employee.DOB|date:"dd/MM/yyyy" }}</td> 
+         <td>{{ employee.gender }} </td>
+         <td> {{ employee.salary }}</td>
+         <td>{{ employee.Bonus }}</td>
+    </tr>
+</table>
+</body>
+
+-------------------- app.component.ts---------------------
+
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+
+   searchData: any = { name: '',salary:'',Bonus:'' };
+   employees = [ 
+    {name:"Guhan", DOB: new Date("July 20, 1990"), gender:"Male", salary:15000, Bonus:2000},
+    {name:"Anbu", DOB:new Date("August 21, 1991") , gender:"Male", salary:12000,Bonus:3000},
+    {name:"Rajesh", DOB: new Date("September 22, 1992"), gender:"Male", salary:17000,Bonus:1000},
+    {name:"Komathi", DOB:new Date("October 23, 1993") , gender:"Female", salary:18000,Bonus:4000},
+    {name:"Kannan", DOB: new Date("November 24, 1994"), gender:"Male", salary:19000,Bonus:2500},
+      ];
+}

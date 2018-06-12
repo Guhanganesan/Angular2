@@ -1,0 +1,73 @@
+Create two Components are: Payilagam, Library.
+
+--> ng generate component Payilagam
+
+
+-----------------Create    app.router.ts    in app folder---------------
+
+import {ModuleWithProviders} from '@angular/core';
+import {Routes,RouterModule} from '@angular/router';
+import {AppComponent} from './app.component';
+import {PayilagamComponent} from './payilagam/payilagam.component';
+import {LibraryComponent} from "./library/library.component";
+import { ModuleWithComponentFactories } from '@angular/compiler/src/jit/compiler';
+
+export const router: Routes=[
+    {path:'',redirectTo:'about',pathMatch:'full'},
+    {path:'Payilagam',component:PayilagamComponent},
+    {path:'Library', component:LibraryComponent}
+];
+
+export const routes:ModuleWithProviders= RouterModule.forRoot(router);
+
+------------------ app.module.ts---------------------
+// import {routes} from './app.router';
+// and add in --> imports:[routes]
+
+
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import {routes} from './app.router';
+
+import { AppComponent } from './app.component';
+import { PayilagamComponent } from './payilagam/payilagam.component';
+import { LibraryComponent } from './library/library.component';
+
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    PayilagamComponent,
+    LibraryComponent
+  ],
+  imports: [
+    BrowserModule,routes
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+
+---------------------- app.component.ts------------
+import { Component } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title = 'app';
+}
+
+--------------------app.component.html---------------
+
+  <h1>
+    Welcome to {{ title }}!
+  </h1>
+  
+<router-outlet></router-outlet>
+
+<a routerLink="Payilagam">Payilagam</a>
+
+<a routerLink="Library">Library</a>
