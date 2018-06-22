@@ -1,0 +1,101 @@
+ANGULAR 2
+FIREBASE DATABASE:
+
+1.  Create new project ( ng new FireDatabse )
+2.  Run your project ( npm start)
+3.  Signup and login firebase account
+4.  Go to console page
+5.  Add a new project ( AngularFire)
+6.  Install Firebase: npm install firebase angularfire2 --save
+7.  import{AngularFireDatabaseModule}from'angularfire2/database' in app.module.ts
+8.  Go to Project Overview --> Add Firebase to your web app -->select 
+    configuration api(in console.firebase.com )
+9.  Go to environment/(create a new file ) environment.ts paste here.
+     export const environment = {
+				production: false,
+				firebaseConfig : {
+				apiKey: "",
+				authDomain: " ",
+				databaseURL: "",
+				projectId: "",
+				storageBucket: "",
+				messagingSenderId: ""
+			  }
+			};
+
+10. import{environment}from'../environments/environment' in app.module.ts
+11. add in imports:[ AngularFireDatabaseModule,
+    AngularFireModule.initializeApp(environment.firebaseConfig)
+12. Go to console.firebase, change the rules of read and write as true
+13. Create a model file employee.model.ts
+                                  // import { SrvRecord } from "dns";
+			export class Employee {
+			$key:string;
+			name:string;
+			position:string;
+			office:string;
+			salary:string;
+			}
+14. Create  a service file employee.service.ts
+
+import{Injectable,NgModule}from'@angular/core';
+import{AngularFireDatabase,AngularFireList}from'angularfire2/database';
+import{Employee}from'./employee.model';
+@Injectable()
+export class EmployeeService
+{
+    employeeList:AngularFireList<any>;
+    selectedEmployee: Employee = new Employee();
+    constructor(private firebase:AngularFireDatabase)
+    {}
+    
+    insertEmployee(employee:Employee)
+    {
+       this.employeeList.push(
+           {
+               name:employee.name,
+               position:employee.position,
+               office:employee.office,
+               salary:employee.salary
+           }
+       );
+    }
+
+}
+
+app.component.ts
+
+import { Component } from '@angular/core';
+import{EmployeeService}from'./employee.service';
+import { Employee } from './employee.model';
+import{NgForm}from'@angular/forms';
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
+  providers:[EmployeeService]
+})
+export class AppComponent {
+  constructor(private employeeService:EmployeeService){}
+
+  onSubmit(employeeForm:NgForm)
+  {
+    this.employeeService.insertEmployee(employeeForm.value);
+  }
+  ngOnInit()
+  {
+    
+  }
+ 
+}
+
+app.component.html
+
+<form #employeeForm="ngForm" (ngSubmit)="onSubmit(employeeForm)">
+  Name:<input name="name" ngModel> <br><br>
+  Position:<input name="position" ngModel> <br><br>
+  Office:<input name="office" ngModel> <br><br>
+  Salary:<input name="salary" ngModel> <br><br>
+  <input type="submit" vamue="submit">
+</form>
+
