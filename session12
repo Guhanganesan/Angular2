@@ -1,0 +1,101 @@
+ANGULAR 2
+FIREBASE DATABASE:
+
+employee.service.ts
+
+import{Injectable,NgModule}from'@angular/core';
+import{AngularFireDatabase,AngularFireList}from'angularfire2/database';
+import{Employee}from'./employee.model';
+@Injectable()
+export class EmployeeService
+{
+    employeeList:AngularFireList<any>;
+    selectedEmployee: Employee = new Employee();
+    constructor(private firebase:AngularFireDatabase)
+    {}
+    
+    insertEmployee(employee:Employee)
+    {
+       this.employeeList.push(
+           {
+               name:employee.name,
+               position:employee.position,
+               office:employee.office,
+               salary:employee.salary
+           }
+       );
+    }
+    getData()
+    {
+        this.employeeList = this.firebase.list('employee');
+
+        return this.employeeList;
+    }
+
+}
+app.component.ts
+
+import { Component } from '@angular/core';
+import{EmployeeService}from'./employee.service';
+import { Employee } from './employee.model';
+import{NgForm}from'@angular/forms';
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
+  providers:[EmployeeService]
+})
+export class AppComponent {
+
+  employeeList:any;
+  constructor(private employeeService:EmployeeService){}
+
+  onSubmit(employeeForm:NgForm)
+  {
+    this.employeeService.insertEmployee(employeeForm.value);
+  }
+  ngOnInit()
+  {
+    //this.employeeService.getData();
+              var x= this.employeeService.getData();
+              x.snapshotChanges().subscribe(item=>
+              {
+                this.employeeList=[];
+                item.forEach(element=>
+                {
+                    var y = element.payload.toJSON();
+                    y["$key"]=element.key;
+                    this.employeeList.push( y as Employee);
+                })
+              });
+  }
+ 
+}
+
+app.component.html
+<form #employeeForm="ngForm" (ngSubmit)="onSubmit(employeeForm)">
+  Name:<input name="name" ngModel> <br><br>
+  Position:<input name="position" ngModel> <br><br>
+  Office:<input name="office" ngModel> <br><br>
+  Salary:<input name="salary" ngModel> <br><br>
+  <input type="submit" vamue="submit">
+</form>
+
+
+<table id="customers">  
+  <tr>
+    <th>Name</th>
+    <th>Position</th>
+    <th>Office</th>
+    <th>Salary</th>
+    <th>EDIT</th>
+    <th>DELETE</th>
+    </tr>
+  <tr *ngFor="let employee of employeeList">
+    <td>{{employee.name}}</td>
+    <td>{{employee.position}}</td>
+    <td>{{employee.office}}</td>
+    <td>{{employee.salary}}</td>
+    </tr>
+  </table>
+
