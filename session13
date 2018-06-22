@@ -1,0 +1,158 @@
+ANGULAR 2
+FIREBASE DATABASE ( UPDATE AND DELETE ) 
+
+employee.service.ts
+
+import{Injectable,NgModule}from'@angular/core';
+import{AngularFireDatabase,AngularFireList}from'angularfire2/database';
+import{Employee}from'./employee.model';
+@Injectable()
+export class EmployeeService
+{
+    employeeList:AngularFireList<any>;
+    selectedEmployee: Employee = new Employee();
+    constructor(private firebase:AngularFireDatabase)
+    {}
+                insertEmployee(employee:Employee)
+                {
+                this.employeeList.push(
+                    {
+                        name:employee.name,
+                        position:employee.position,
+                        office:employee.office,
+                        salary:employee.salary
+                    }
+                );
+                }
+                getData()
+                {
+                    this.employeeList = this.firebase.list('employee');
+
+                    return this.employeeList;
+                }
+
+              updateEmployee(employee:Employee)
+                {
+                    this.employeeList.update(employee.$key,{
+                                name:employee.name,
+                                position:employee.position,
+                                office:employee.office,
+                                salary:employee.salary,
+
+                              });
+
+                }
+                deleteEmployee($key:string)
+                {
+                    this.employeeList.remove($key);
+                }
+        
+
+}
+app.component.ts
+
+import { Component } from '@angular/core';
+import{EmployeeService}from'./employee.service';
+import { Employee } from './employee.model';
+import{NgForm}from'@angular/forms';
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css'],
+  providers:[EmployeeService]
+})
+export class AppComponent {
+
+  employeeList:any;
+  constructor(private employeeService:EmployeeService){}
+
+  onSubmit(employeeForm:NgForm)
+  {
+    if(employeeForm.value.$key==null)
+              this.employeeService.insertEmployee(employeeForm.value);
+          else    
+              this.employeeService.updateEmployee(employeeForm.value);
+  }
+  ngOnInit()
+  {
+    //this.employeeService.getData();
+              var x= this.employeeService.getData();
+              x.snapshotChanges().subscribe(item=>
+              {
+                this.employeeList=[];
+                item.forEach(element=>
+                {
+                    var y = element.payload.toJSON();
+                    y["$key"]=element.key;
+                    this.employeeList.push( y as Employee);
+                })
+              });
+  }
+  editData(emp:Employee)
+  {
+  this.employeeService.selectedEmployee=emp;
+  } 
+   
+  onDelete(key:string)
+        {
+         if(confirm("Are you sure to delete?"))
+          {
+            this.employeeService.deleteEmployee(key);
+              
+          }
+      }
+
+                resetForm(employeeForm?:NgForm)
+                { 
+                  if(employeeForm!=null)
+        
+                  employeeForm.reset();
+                  this.employeeService.selectedEmployee=
+                  {
+                    $key:null,
+                    name:'',
+                    position:'',
+                    office:'',
+                    salary:'',
+                  }
+                }                  
+     }
+     
+app.component.html
+<h2> Welcome to My FireBase Database</h2>
+
+<form #employeeForm="ngForm" (ngSubmit)="onSubmit(employeeForm)">  <input type="hidden" name="$key" [(ngModel)]="employeeService.selectedEmployee.$key"><br> 
+  Name:<input name="name"  [(ngModel)]="employeeService.selectedEmployee.name" ngModel> <br><br>
+  Position:<input name="position"  [(ngModel)]="employeeService.selectedEmployee.position" ngModel> <br><br>
+  Office:<input name="office"  [(ngModel)]="employeeService.selectedEmployee.office" ngModel > <br><br>
+  Salary:<input name="salary"  [(ngModel)]="employeeService.selectedEmployee.salary" ngModel> <br><br>
+  <input type="submit" vamue="submit">
+  <button type="button" (click)="resetForm(employeeForm)">reset</button>
+</form>
+
+<br><br>
+<table id="customers">  
+      <tr>
+            <th>Name</th>
+            <th>Position</th>
+            <th>Office</th>
+            <th>Salary</th>
+            <th>EDIT</th>
+            <th>DELETE</th>
+      </tr>
+<tr *ngFor="let employee of employeeList">
+              <td>{{employee.name}}</td>
+              <td>{{employee.position}}</td>
+              <td>{{employee.office}}</td>
+              <td>{{employee.salary}}</td>
+              <td (click)="editData(employee)">
+                <a style="color:green;">EDIT</a>
+              </td>
+              <td (click)="onDelete(employee.$key)">
+             <a style="color:red;">DELETE</a>
+              </td>
+</tr>
+</table>
+
+        
+
