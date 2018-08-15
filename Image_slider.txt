@@ -1,0 +1,72 @@
+Image Slider:
+------------------ index.html ------------
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Ang2</title>
+  <base href="/">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>
+-------------------- app.component.html -----------------------
+
+
+<h2> Image Slides</h2>
+
+<img height="200" [src]="image[count]" width="400" />
+
+<button (click)="increseMe()"><i class="fa fa-arrow-circle-right" style="font-size:24px"></i></button>
+<button (click)="decreseMe()"><i class="fa fa-arrow-circle-left" style="font-size:24px"></i></button>
+
+
+---------------------- app.component.ts ----------------------
+
+import { Component } from '@angular/core';
+import { IButton } from 'selenium-webdriver';
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+
+image=["assets/images/1.gif","assets/images/2.gif","assets/images/3.gif"]
+file:any;
+count=0;
+increseMe()
+{
+  if(this.count<=2)
+  {
+    this.image[this.count];
+    while(this.count==2)
+    {
+      this.count=-1;
+      break;
+    }
+  }
+  this.count++;  
+}
+
+decreseMe()
+{
+  if(this.count>=0)
+  {
+    this.image[this.count];
+    while(this.count==0)
+    {
+      this.count=3;
+      break;
+    }
+  }
+  this.count--;
+  
+}
+}
