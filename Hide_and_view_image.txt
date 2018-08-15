@@ -1,0 +1,127 @@
+------------ app.component.html --------------------
+<h2> Call css properties </h2>
+
+<p class="myclass"> Guhan</p>
+<p [ngClass]="myclassvalue">Call by using ngClass</p>
+
+<button (click)="hideView()">Toggle</button>
+
+<img src="assets/images/angular.jpg" [class]="test">
+
+<br><br>
+
+<h2>Increase or Decrease values</h2>
+
+<button (click)="increseMe()">+</button> <button (click)="decreseMe()">-</button>
+
+<p>{{count}}</p>
+
+<h2>Change the colors</h2>
+<div style="width:200px;height:200px;" [id]="color">
+
+</div>
+
+Red:<input name="x" type="radio" (click)="changeColorRed()">
+Green:<input name="x" type="radio" (click)="changeColorGreen()">
+Blue:<input name="x" type="radio" (click)="changeColorBlue()">
+
+<h2> Image Slides</h2>
+
+<img height="200" [src]="file.url" width="400" />
+
+<button (click)="file=image1">Image1</button>
+<button (click)="file=image2">Image2</button>
+<button (click)="file=image3">Image3</button>
+
+----------------------- app.component.ts ---------------------------------------
+import { Component } from '@angular/core';
+import { IButton } from 'selenium-webdriver';
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  myclassvalue="myclass";
+  
+   test;
+
+  x:boolean=true;
+  hideView()
+  {
+    if(this.x==true)
+    {
+      this.test="hide";
+      this.x=false;
+    }
+    else if(this.x==false)
+    { 
+      this.test="view";
+      this.x=true;
+    }
+  }
+   count=0;
+   increseMe()
+   {
+    this.count++;
+   }
+   decreseMe()
+   {
+     this.count--;
+   }
+   color="myid";
+   changeColorRed()
+   {
+     this.color="red";
+   }
+
+   changeColorGreen()
+   {
+     this.color="green";
+   }
+   changeColorBlue()
+   {
+     this.color="blue";
+   }
+   
+i = 0;
+m:any=["assets/images/1.gif","assets/images/2.gif","assets/images/3.gif"];
+
+image1={url:"assets/images/1.gif"}
+image2={url:"assets/images/2.gif"}
+image3={url:"assets/images/3.gif"}
+file:any;
+}
+
+------------------- app.component.css -------------------
+
+
+#myid
+{
+    color:red;
+    background-color:palegreen;
+}
+
+.myclass
+{
+  color:blue; background-color: gainsboro;
+}
+
+img{width:200px;height: 200px;}
+
+.view{
+    display: block;
+}
+.hide{
+    display: none;
+}
+
+#red{
+    background-color:red;
+}
+#green{
+    background-color:green;
+}
+#blue{
+    background-color:blue;
+}
