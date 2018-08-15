@@ -1,0 +1,113 @@
+----------------- index.html --------------------------
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Ang2</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+  <app-root></app-root>
+</body>
+</html>
+
+------------------ app.module.ts --------------------------
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { AppComponent } from './app.component';
+import {FormsModule} from '@angular/forms';
+@NgModule({
+  declarations: [
+    AppComponent
+  ],
+  imports: [
+    BrowserModule,FormsModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+----------------- app.component.html ------------------------
+
+<h2>Image Gallery </h2>
+
+<button (click)="remove()">Remove</button>
+
+<div class="row">
+        <div class="col-xs-6">
+            <table>
+                <tr *ngFor="let list of image">
+                    <td><img [src]="list"></td>
+                </tr>
+            </table>
+        </div>
+
+         <div class="col-xs-4">
+               <input [(ngModel)]="name"> <br>
+               <button (click)="add(name)">add</button>
+               <button (click)="removeData()">Delete</button>
+                <ul *ngFor="let item of data; let i=index">
+                    
+                    <li>{{i+1}}=>{{item}} <b (click)="delete(i)">X</b></li>
+
+                </ul>
+               
+            </div>
+
+</div>
+
+<p (click)="check()" id="p1">Jasljsa</p>
+-------------------- app.component.ts ------------------------
+import { Component } from '@angular/core';
+import { IButton } from 'selenium-webdriver';
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+
+  image=["assets/images/1.gif","assets/images/2.gif","assets/images/3.gif"];
+
+  data=["Guhan","Anbu","Ramesh","Kathir"];
+  length;
+  constructor()
+  {
+    this.length=this.data.length;
+  }
+  
+  remove()
+  {
+    this.image.pop();
+  }
+
+  add(x)
+  {
+  this.data.push(x);
+  }
+
+  removeData()
+  {
+    this.data.pop();
+  }
+
+elem;
+check()
+{
+ this.elem=document.getElementById("p1").remove();
+ //console.log(this.data.length;)
+}
+
+delete(i)
+{
+  this.data.splice(i,1);
+  // i->starting index, 1->number of elements to remove
+}
+
+}
