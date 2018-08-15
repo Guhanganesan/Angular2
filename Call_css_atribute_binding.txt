@@ -1,0 +1,93 @@
+------------------ app.component.html --------------------
+
+<h2>{{title}}</h2>
+<h3>Interpolation</h3>
+<p> Interpolation is a special syntax that Angular converts into a property binding</p>
+
+<p [textContent]="name"> </p>
+
+<p [innerHTML]="name"> </p>
+
+<input [value]="name"> <br>
+
+
+{{x+y}}
+<br><br>
+
+<button (click)="getValue()">click</button> <br><br>
+
+<p [innerHTML]="z">  </p>
+
+<h2> Call Id and Class in CSS</h2>
+
+<p [id]="myid"> My CSS Id calling  here.. with color green </p>
+
+<p [class]="myclass"> My CSS Class calling  here.. </p>
+
+<h2> Hide and View the Image</h2>
+
+<button (click)="hideImage()">hide</button> <button (click)="viewImage()">view</button>
+
+<img [src]="imageUrl" [class]="check"> <br><br>
+
+------------------------ app.component.css--------------------------------------------
+#myid
+{
+    color:red;
+}
+
+.myclass
+{
+  color:blue; background-color: gainsboro;
+}
+
+img{width:200px;height: 200px;}
+
+.view{
+    display: block;
+}
+.hide{
+    display: none;
+}
+---------------------------- app.component.ts -----------------
+import { Component } from '@angular/core';
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+  title="Angular 2";
+  
+  x=10;
+  y=20;
+  z;
+  
+  name="Payilagam";
+
+  myid="myid";
+
+  myclass="myclass";
+
+  imageUrl="assets/images/angular.jpg";
+  
+  hide="hide";
+  view="view";
+
+  check;
+  
+  getValue()
+  {
+    this.z= this.x+this.y;
+  }
+  
+  hideImage()
+  {
+     this.check=this.hide;
+  }
+  viewImage()
+  {
+    this.check=this.view;
+  }
+
+}
