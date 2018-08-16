@@ -1,0 +1,56 @@
+
+App.component.html:-
+<h2>Change Images</h2>
+<button (click)='check("assets/images/1.gif")'>img1</button>
+<button (click)='check("assets/images/2.gif")'>img2</button>
+<div class="row">
+    <div class="col-xs-4">
+            <img [src]='title'>
+    </div>
+    <div class="col-xs-4">
+Name:<input #name (keyup)=0> <br>
+User:<input #user (keyup)=0> <br>
+Mobile:<input #mob (keyup)=0> <br>
+<button (click)="callValues(name.value,user.value,mob.value)">click</button>
+<p [textContent]="m"></p>
+<p [textContent]="n"></p>
+<p [textContent]="p"></p>
+
+<h2> Using InnerHTMl</h2>
+<p #p1 >Guhan</p>
+<button (click)="getInner(p1.innerHTML)">inner</button>
+<p>{{s}}</p>
+    </div>
+</div>
+
+App.component.ts:-
+
+import { Component } from '@angular/core';
+@Component({
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
+})
+export class AppComponent {
+ 
+          title="Guhan";
+          name;
+          check(x:any)
+          {
+            this.title=x;
+          }
+          //-----------------------------------
+          m:string;n:string;p:string;
+          callValues(x:string,y:string,z:string)
+          {
+          this.m=x;
+          this.n=y;
+          this.p=z;
+          }
+          //------------------------------------
+          s:string;
+          getInner(m:string)
+          {
+            this.s=m;
+          }
+}
